@@ -51,3 +51,7 @@ TEST_CASE("Example BST Insert", "[flag]"){
 		REQUIRE(actualOutput == expectedOutput);
 	*/
 }
+
+TEST_CASE("Input Validation Test" , "[validity]") {
+
+}
