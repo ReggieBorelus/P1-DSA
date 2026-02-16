@@ -22,7 +22,7 @@ struct Node {
     Node(int UFID, string name) {
         this->UFID = UFID;
         this->name = name;
-        this->height = 1v  ;
+        this->height = 1;
         this->left = nullptr;
         this->right = nullptr;
     };
