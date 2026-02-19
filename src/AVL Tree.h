@@ -19,10 +19,10 @@ struct Node {
     Node* left;
     Node* right;
 
-    Node(int UFID, string name) {
+    Node(const int &UFID, const string &name) {
         this->UFID = UFID;
         this->name = name;
-        this->height = 1;
+        this->height = 0;
         this->left = nullptr;
         this->right = nullptr;
     };
@@ -53,6 +53,9 @@ public:
             root = newNode;
         }
         ID[UFID] = newNode;
+
+
+
         return true;
     }
 
@@ -62,8 +65,7 @@ public:
             return false;
         }
         if (ID.find(UFID) != ID.end()) {
-            delete ID[UFID];
-            ID.erase(UFID);
+
             cout << "Successful" << endl;
         }
         else {
@@ -77,7 +79,7 @@ public:
         if (root ==  nullptr) {
             cerr << "Unsuccessful" << endl;
         }
-        for (auto it = ID.begin(); it != ID.end(); it++) {
+         for (auto it = ID.begin(); it != ID.end(); ++it) {
             if (it->second->name == name) {
                 cout << it->second->name << endl;
             }
@@ -107,11 +109,23 @@ public:
 
     }
 
-    void sort() {
-        Node* temp = root;
 
-        for (int i = 0; i < ID.size(); i++) {
-            temp = temp -> right;
-        }
-    }
 };
+
+
+//     void sort() {
+//         Node* &temp = root;
+//
+//         for (int i = 0; i < ID.size(); i++) {
+//             for (auto it = ID.begin(); it != ID.end(); it++) {
+//                 if (it->second->UFID < temp -> UFID) {
+//                     temp->left = it->second;
+//                     temp = it->second;
+//                 }
+//                 else if (it ->second -> UFID > temp -> UFID) {
+//                     temp->right = it -> second;
+//                     temp = it -> second;
+//                 }
+//             }
+//         }
+//     }
