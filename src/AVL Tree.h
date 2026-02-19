@@ -48,10 +48,11 @@ public:
             cerr << "Unsuccessful" << endl;
             return false;
         }
+        Node* newNode = new Node(UFID, name);
         if (root == nullptr) {
-            root = new Node(UFID, name);
+            root = newNode;
         }
-        ID[UFID] = new Node(UFID, name);
+        ID[UFID] = newNode;
         return true;
     }
 
@@ -60,14 +61,57 @@ public:
             cerr << "Unsuccessful" << endl;
             return false;
         }
-        if () {
-
+        if (ID.find(UFID) != ID.end()) {
+            delete ID[UFID];
+            ID.erase(UFID);
+            cout << "Successful" << endl;
+        }
+        else {
+            cerr << "Unsuccessful" << endl;
+            return false;
         }
         return true;
     }
 
-    bool Search(const string &name) {
+    void Search(const string &name) {
+        if (root ==  nullptr) {
+            cerr << "Unsuccessful" << endl;
+        }
+        for (auto it = ID.begin(); it != ID.end(); it++) {
+            if (it->second->name == name) {
+                cout << it->second->name << endl;
+            }
+            else {
+                cerr << "Unsuccessful" << endl;
+            }
+        }
+    }
+
+    void printInorder() {
 
     }
 
+    void printPreorder() {
+
+    }
+
+    void printPostorder() {
+
+    }
+
+    void printLevelCount() {
+
+    }
+
+    void removeInorder(int n) {
+
+    }
+
+    void sort() {
+        Node* temp = root;
+
+        for (int i = 0; i < ID.size(); i++) {
+            temp = temp -> right;
+        }
+    }
 };
