@@ -9,19 +9,20 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <vector>
 
 using namespace std;
 
 #endif //PROJECT1_AVL_TREE_H
 
 struct Node { // Node Structure and it's attributes along with it's parameterized constructor
-    int UFID;
+    string UFID;
     string name;
     int height;
     Node* left;
     Node* right;
 
-    Node(const int &UFID, const string &name) {
+    Node(const string &UFID, const string &name) {
         this->UFID = UFID;
         this->name = name;
         this->height = 0;
@@ -33,35 +34,36 @@ struct Node { // Node Structure and it's attributes along with it's parameterize
 class AVLTree {
 private:
     Node* root;
-    int height;
-    map<int, Node*> ID; // A Map  to hold the ids for quick lookup
-
+    map<string, Node*> ID; // A Map  to hold the ids for quick lookup
 public:
-    AVLTree() {
+    vector<string> preOrder;
+    vector<string> inOrder;
+    vector<string> postOrder;
+    AVLTree() { // Constructor
         root = nullptr;
-        height = 0;
     };
 
-    ~AVLTree();
+    ~AVLTree() = default;
 
-    bool Insert(int const &UFID, string const &name) {
+    bool Insert(string const &UFID, string const &name) {
         if (!all_of(name.begin(), name.end(), [](unsigned char const c) {  //Checks if all characters in the name parameter is alphabetical or a space
-            return isalpha(c) || c == ' ';
-        })) {
-            cerr << "Unsuccessful" << endl;
+            return isalpha(c) || c == ' '  || c ==  '"';
+        })  || !validUFID(UFID)) {
+            cout << "unsuccessful\n";
             return false;
         }
-        if (ID.find(UFID) == ID.end()) { //Does a lookup in a map to save time to see if an ID is already in tree. Trading off time for space.
-            cerr << "Unsuccessful" << endl;
+        if (ID.find(UFID) != ID.end()) { //Does a lookup in a map to save time to see if an ID is already in tree. Trading off time for space.
+            cout << "unsuccessful\n";
             return false;
         }
         root = InsertHelper(root, UFID, name);
+        cout << "successful\n";
         return true;
     }
 
-    Node* InsertHelper(Node* node, int UFID, string const &name) {
+    Node* InsertHelper(Node* node, string UFID, string const &name) {
 
-        if (node == nullptr) {
+        if (node == nullptr) { //If there are no nodes in the tree, create a new Node as the root
             Node* newNode = new Node(UFID, name);
             ID[UFID] = newNode;
             return newNode;
@@ -99,22 +101,18 @@ public:
         return node;
     }
 
-
-    bool Remove(const int &UFID) {
-        if (root == nullptr) {
-            cerr << "Unsuccessful" << endl;
-            return false;
-        }
+    bool Remove(const string &UFID) {
         if (ID.find(UFID) == ID.end()) {
-            cerr << "Unsuccessful" << endl;
+            cout << "unsuccessful\n";
             return false;
         }
         root = removeHelper(root, UFID);
         ID.erase(UFID);
+        cout << "successful\n";
         return true;
     }
 
-    Node* removeHelper(Node* node, int UFID) {
+    Node* removeHelper(Node* node, string UFID) {
         if (node == nullptr) { //if the passed in node is nullptr, returns
             return nullptr;
         }
@@ -176,73 +174,93 @@ public:
         return node;
     }
 
-    bool Search(const int &UFID) {
+    bool Search(const string &UFID) {
         Node* node = traversalHelper(root, UFID);
         if (node == nullptr) {
-            cerr << "Unsuccessful" << endl;
+            cout << "unsuccessful\n";
             return false;
         }
         if (node->UFID != UFID) {
             return false;
         }
         if (node->UFID == UFID) {
-            cout << node->name << endl;
+            cout << node->name<< "\n";
         }
         return true;
     }
 
-    bool Search(const string &name) {
+    bool SearchName(const string &name) {
         if (!NameSearchHelper(root, name)) {
-            cerr << "Unsuccessful" << endl;
+            cout << "unsuccessful\n";
             return false;
         }
         return true;
     }
 
     void printInorder(Node* node) {
-        if (node == nullptr) {
-           return;
+        inOrder.clear();
+        inorderHelper(node);
+        if (!inOrder.empty()) {
+            cout << inOrder[0];
         }
-        printInorder(node->left);
-        cout << node->name << " " << node->UFID<< endl;
-        printInorder(node->right);
+        for (unsigned int j = 1; j < inOrder.size(); j++) {
+            cout << ", " << inOrder[j];
+        }
+        cout << endl;
     }
 
     void printPreorder(Node* node) {
-        if (node == nullptr) {
-            return;
+        preOrder.clear();
+        preorderHelper(node);
+        if (!preOrder.empty()) {
+            cout << preOrder[0];
         }
-        cout << node->name << " "  << node->UFID << endl;
-        printPreorder(node->left);
-        printPreorder(node->right);
+        for (unsigned int  j = 1; j < preOrder.size(); j++) {
+            cout << ", " << preOrder[j];
+        }
+        cout << endl;
     }
 
+
     void printPostorder(Node* node) {
-        if (node == nullptr) {
-            return;
+        postOrder.clear();
+        postorderHelper(node);
+        if (!postOrder.empty()) {
+            cout << postOrder[0];
         }
-        printPostorder(node->left);
-        printPostorder(node->right);
-        cout << node->name << " "  << node->UFID << endl;
+        for (unsigned int  j = 1; j < postOrder.size(); j++) {
+            cout << ", " << postOrder[j];
+        }
+        cout << endl;
     }
 
     void printLevelCount() {
         if (root == nullptr) {
-            cout <<  "0" << endl;
+            cout <<  "0\n";
             return;
         }
-        cout << root->height << endl;
+        cout << root->height << "\n";
     }
 
-    void removeInorder(int n) {
-
+    void removeInorder(string n) { // Since the Nodes are kept in a map, we can advance an iterator to the nth element of the map. Maps are sorted by key so it would remove the right inorder node
+        int k = stoi(n);
+        auto it = ID.begin();
+        unsigned int n_unsigned = k;
+        if (k < 0  || n_unsigned >= ID.size()) {
+            cout << "unsuccessful\n";
+            return;
+        }
+        advance(it, k);
+        root = removeHelper(root, it->first);
+        ID.erase(it);
+        cout << "successful\n";
     }
 
     int getHeight(Node* node) {
         if (node == nullptr) {
-            return 0;
+            return -1;
         }
-        return node->height;
+        return node->height ;
     }
 
     int getBalanceFactor(Node* node) {
@@ -256,16 +274,16 @@ public:
         Node* temp = node->left; //We set a pointer equal to the left node of the node we want to rebalance from
         Node* tempRight = temp->right; //We set another pointer from the previous temp node that points to the right of it
 
-        temp->right = node; //Now we move our node to the right of
+        temp->right = node; //Now we move our nodes around
         node->left = tempRight;
 
-        node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
+        node->height = max(getHeight(node->left), getHeight(node->right)) + 1; // Now we update the height of both nodes
         temp->height = max(getHeight(temp->right), getHeight(temp->left)) + 1;
 
         return temp;
     }
 
-    Node* rotateLeft(Node* node) {
+    Node* rotateLeft(Node* node) { // It's the same logic as above but in a different direction.
         Node* temp = node->right;
         Node* tempLeft = temp->left;
 
@@ -278,7 +296,7 @@ public:
         return temp;
     }
 
-    Node* traversalHelper(Node* node, const int UFID) {
+    Node* traversalHelper(Node* node, const string UFID) { //A helper to help traverse the BST to find an ID. Since every UFID is unique, once the ID is found it does not have to call itself again.
         if (node == nullptr) {
             return nullptr;
         }
@@ -294,7 +312,7 @@ public:
         }
     }
 
-    bool NameSearchHelper(Node* node, const string &name) {
+    bool NameSearchHelper(Node* node, const string &name) { // A helper to find all names in a tree. Since names can occur multiple times, it has to call itself until the entire tree is searched.
         if (node == nullptr) {
             return false;
         }
@@ -302,14 +320,47 @@ public:
         bool found = false;
         found = found|NameSearchHelper(node->left, name);
         if (node->name == name) {
-            cout << node->UFID << endl;
+            cout << node->UFID << "\n";
             found = true;
         }
-        found = found|NameSearchHelper(node->left, name);
+        found = found|NameSearchHelper(node->right, name);
         return found;
     }
 
+    Node* getRootNode() {
+        return root;
+    }
 
+    bool validUFID(const string &UFID) {
+        return (UFID.length() == 8 && all_of(UFID.begin(), UFID.end(), ::isdigit));
+    }
+
+    void inorderHelper(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+        inorderHelper(node->left);
+        inOrder.push_back(node->name);
+        inorderHelper(node->right);
+    }
+
+    void preorderHelper(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+        preOrder.push_back(node->name);
+        preorderHelper(node->left);
+        preorderHelper(node->right);
+    }
+
+    void postorderHelper(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+        postorderHelper(node->left);
+        postorderHelper(node->right);
+        postOrder.push_back(node->name);
+    }
 
 };
 
