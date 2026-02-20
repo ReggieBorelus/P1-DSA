@@ -33,6 +33,10 @@ private:
     Node* root;
     int height;
     map<int, Node*> ID;
+
+    Node* Insert(Node* node, int UFID, string name) {
+        return node;
+    };
 public:
     AVLTree() {
         root = nullptr;
@@ -54,10 +58,13 @@ public:
         }
         ID[UFID] = newNode;
 
+        Node* temp = root;
 
 
         return true;
     }
+
+
 
     bool Remove(const int &UFID) {
         if (root == nullptr) {
@@ -113,19 +120,3 @@ public:
 };
 
 
-//     void sort() {
-//         Node* &temp = root;
-//
-//         for (int i = 0; i < ID.size(); i++) {
-//             for (auto it = ID.begin(); it != ID.end(); it++) {
-//                 if (it->second->UFID < temp -> UFID) {
-//                     temp->left = it->second;
-//                     temp = it->second;
-//                 }
-//                 else if (it ->second -> UFID > temp -> UFID) {
-//                     temp->right = it -> second;
-//                     temp = it -> second;
-//                 }
-//             }
-//         }
-//     }
